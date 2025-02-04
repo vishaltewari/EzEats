@@ -1,122 +1,105 @@
-'use client'
-import React from 'react'
-import { useState,useEffect } from 'react'
-import Customerheader from '../components/Customerheader'
-import Footer from '../components/Footer'
-import { DELIVERY_CHARGES, TAX } from '../lib/constant'
-import { useRouter } from 'next/navigation'
-const cart = () => {
-    const [userstorage, setuserstorage] = useState(JSON.parse(localStorage.getItem('user')))
-    const [cartstorage, setcartstorage] = useState(JSON.parse(localStorage.getItem('cart')))
-    const [total, settotal] = useState(() =>
-        cartstorage?.length == 1 ? cartstorage[0].price : cartstorage?.reduce((a, b) => {
-            return a.price + b.price
-        }))
-    console.log(total)
-    useEffect(() => {
-      if(total>0){
-        router.push('/order')
+'use client';
+import React, { useState, useEffect } from 'react';
+import Customerheader from '../components/Customerheader';
+import Footer from '../components/Footer';
+import { DELIVERY_CHARGES, TAX } from '../lib/constant';
+import { useRouter } from 'next/navigation';
 
-      }
-    }, [total])
-    
-    const [removecartdata, setremovecartdata] = useState(false)
-    const router=useRouter()
-    const ordernow=async() => {
-      let user_id=JSON.parse(localStorage.getItem('user'))._id
-      let city=JSON.parse(localStorage.getItem('user')).city
-      let cart=JSON.parse(localStorage.getItem('cart'))
-      let fooditemids=cart.map((item)=>item._id).toString()
-      let partnerresponse=await fetch('http://localhost:3000/api/deliverpartners/'+city)
-      partnerresponse=await partnerresponse.json()
-    //   console.log(partnerresponse)
-       let  deliverypartner_id=partnerresponse.result.map((item)=>item._id)
-       let deliverypartner_id1=deliverypartner_id[Math.floor(Math.random()*deliverypartner_id.length)]
-        console.log(deliverypartner_id1)
-        return false
-        if(!deliverypartner_id1){
-            alert("No delivery partner available right now! Please try again later")
-        }
-    //   return false
-    //   let deliverypartner_id='60b9b3b3b3b3b3b3b3b3b3b3'  
-      let status='confirm'
-      let resto_id=cart[0].resto_id
+const Cart = () => {
+  const router = useRouter();
+  const [userstorage, setUserStorage] = useState(null);
+  const [cartstorage, setCartStorage] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [removecartdata, setRemoveCartData] = useState(false);
 
-      let collection={
-         user_id,
-         fooditemids,
-         resto_id,
-         deliverypartner_id,
-         status,
-         amount:total,
-
-      }
-    //   console.log(collection)   
-    let response=await fetch('http://localhost:3000/api/order',{
-        method:'POST',
-        body:JSON.stringify(collection)
-    })
-    response=await response.json()
-    if(response.success){
-        alert('Order Placed Successfully')
-        setremovecartdata(true)
-        router.push('myprofile')
-    }else{
-        alert('Order Failed')
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const user = JSON.parse(localStorage.getItem('user'));
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      setUserStorage(user);
+      setCartStorage(cart);
+      setTotal(cart.length === 1 ? cart[0].price : cart.reduce((a, b) => a.price + b.price, 0));
     }
+  }, []);
+
+  useEffect(() => {
+    if (total > 0) {
+      router.push('/order');
     }
-    
-    return (
-        <div>
-            <Customerheader removecartdata={removecartdata} />
-            <div className='totalprice flex flex-col items-center flex-wrap border p-[20px]'>
-               <h2 className='font-bold'>User Details</h2>
-                <div className='totalpriceinfo flex justify-between w-full max-w-[400px] font-bold text-orange-500'>
-                    <span className='w-[150px]'>Name</span>
-                    <span className='w-[150px]'>{userstorage.name}</span>
-                </div>
-                <div className='totalpriceinfo flex justify-between w-full max-w-[400px] font-bold text-orange-500'>
-                    <span className='w-[150px]'>Address</span>
-                    <span className='w-[150px]'>{userstorage.address}</span>
-                </div>
-                <div className='totalpriceinfo flex justify-between w-full max-w-[400px] font-bold text-orange-500'>
-                    <span className='w-[150px]'>Contact</span>
-                    <span className='w-[150px]'>{userstorage.contact}</span>
-                </div>
-                <h2 className='font-bold'>Amount Details</h2>
-                <div className='totalpriceinfo flex justify-between w-full max-w-[400px] font-bold text-orange-500'>
-                    <span className='w-[150px]'>Item charges:</span>
-                    <span className='w-[150px]'>{total}</span>
-                </div>
-                <div className='totalpriceinfo flex justify-between w-full max-w-[400px] font-bold text-orange-500'>
-                    <span className='w-[150px]'>Tax Price:</span>
-                    <span className='w-[150px]'>{total * TAX / 100}</span>
-                </div>
-                <div className='totalpriceinfo flex justify-between w-full max-w-[400px] font-bold text-orange-500'>
-                    <span className='w-[150px]'>Delivery Charges:</span>
-                    <span className='w-[150px]'>{DELIVERY_CHARGES}</span>
-                </div>
-                <div className='totalpriceinfo flex justify-between w-full max-w-[400px] font-bold text-orange-500'>
-                    <span className='w-[150px]'>Total Amount:</span>
-                    <span className='w-[150px]'>{total + (total * TAX / 100) + DELIVERY_CHARGES}</span>
-                </div>
-                <h2 className='font-bold '>Payment Methods</h2>
-                <div className='totalpriceinfo flex justify-between w-full max-w-[400px] font-bold text-orange-500'>
-                    <span className='w-[150px]'>Cash On Delivery</span>
-                    <span className='w-[150px]'>{total + (total * TAX / 100) + DELIVERY_CHARGES}</span>
-                </div>
-            </div>          
-            <div className='flex justify-center mr-12'>
-                <button onClick={ordernow} className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-black rounded-lg group bg-gradient-to-br from-pink-500  to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white dark:text-black focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800">
-                    <span className="relative  px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-[#f5f5dc] rounded-md group-hover:bg-opacity-0">
-                        Proceed
-                    </span>  
+  }, [total]);
+
+  const ordernow = async () => {
+    if (typeof window !== 'undefined') {
+      let user_id = JSON.parse(localStorage.getItem('user'))._id;
+      // Your order logic here
+    }
+  };
+
+  const handleremovecart = (id) => {
+    const updatedCart = cartstorage.filter(item => item._id !== id);
+    setCartStorage(updatedCart);
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
+    setTotal(updatedCart.length === 1 ? updatedCart[0].price : updatedCart.reduce((a, b) => a.price + b.price, 0));
+  };
+
+  return (
+    <div>
+      <Customerheader />
+      <div className='fooditemswrapper mt-[50px] mb-[50px]'>
+        {cartstorage.length > 0 ? (
+          cartstorage.map((item, index) => (
+            <div className='listitem text-orange-500 border border-orange-500 p-[20px] flex capitalize gap-3' key={index}>
+              <div className='block1 w-[20%]'>
+                <img className='w-[150px] pr-[20px]' src={item.img_path} alt='item_img' />
+              </div>
+              <div className='block2 w-[60%]'>
+                <div>{item.name}</div>
+                <div className='description'>{item.description}</div>
+                <button
+                  onClick={() => handleremovecart(item._id)}
+                  className='text-black border-none bg-orange-500 p-[5px] rounded-md cursor-pointer'
+                >
+                  Remove from cart
                 </button>
+              </div>
+              <div className='block3 w-[20%] font-bold'>Price : Rs.{item.price}</div>
             </div>
-            <Footer />
+          ))
+        ) : (
+          <h1 className='text-center text-2xl'>No food items available</h1>
+        )}
+      </div>
+      <div className='totalprice flex flex-col items-center border p-[20px]'>
+        <div className='totalpriceinfo flex justify-between w-full max-w-[400px] font-bold text-orange-500'>
+          <span className='w-[150px] text-right'>Item charges:</span>
+          <span className='w-[150px] text-left'>{total}</span>
         </div>
+        <div className='totalpriceinfo flex justify-between w-full max-w-[400px] font-bold text-orange-500'>
+          <span className='w-[150px] text-right'>Tax Price:</span>
+          <span className='w-[150px] text-left'>{total * TAX / 100}</span>
+        </div>
+        <div className='totalpriceinfo flex justify-between w-full max-w-[400px] font-bold text-orange-500'>
+          <span className='w-[150px] text-right'>Delivery Charges:</span>
+          <span className='w-[150px] text-left'>{DELIVERY_CHARGES}</span>
+        </div>
+        <div className='totalpriceinfo flex justify-between w-full max-w-[400px] font-bold text-orange-500'>
+          <span className='w-[150px] text-right'>Total Amount:</span>
+          <span className='w-[150px] text-left'>{total + (total * TAX / 100) + DELIVERY_CHARGES}</span>
+        </div>
+      </div>
+      <div className='flex justify-center'>
+        <button
+          onClick={ordernow}
+          className='relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-black rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white dark:text-black focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800'
+        >
+          <span className='relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-[#f5f5dc] rounded-md group-hover:bg-opacity-0'>
+            Order Now
+          </span>
+        </button>
+      </div>
+      <Footer />
+    </div>
+  );
+};
 
-    )
-}
-
-export default cart
+export default Cart;
