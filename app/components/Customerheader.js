@@ -1,6 +1,5 @@
-'use client';
-import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 const Customerheader = (props) => {
@@ -28,22 +27,32 @@ const Customerheader = (props) => {
           setCartItem([props.cartdata]);
           localStorage.setItem('cart', JSON.stringify([props.cartdata]));
         } else {
+          let localCartItem = cartItem;
+          localCartItem.push(props.cartdata);
           setCartNumber(cartNumber + 1);
-          setCartItem([...cartItem, props.cartdata]);
-          localStorage.setItem('cart', JSON.stringify([...cartItem, props.cartdata]));
+          localStorage.setItem('cart', JSON.stringify(localCartItem));
         }
       } else {
-        setCartNumber(1);
         setCartItem([props.cartdata]);
+        setCartNumber(1);
         localStorage.setItem('cart', JSON.stringify([props.cartdata]));
       }
     }
   }, [props.cartdata]);
 
+  useEffect(() => {
+    if (props.removecartdata) {
+      let localCartItems = cartItem.filter((item) => item._id !== props.removecartdata);
+      setCartItem(localCartItems);
+      setCartNumber(cartNumber - 1);
+      localStorage.setItem('cart', JSON.stringify(localCartItems));
+    }
+  }, [props.removecartdata]);
+
   const handleLogout = () => {
     localStorage.removeItem('user');
     setUser(undefined);
-    router.push('/login');
+    router.push('/usersign');
   };
 
   return (
@@ -72,7 +81,7 @@ const Customerheader = (props) => {
             </>
           ) : (
             <li>
-              <Link href="/login">Login</Link>
+              <Link href="/usersign">Login</Link>
             </li>
           )}
         </ul>
