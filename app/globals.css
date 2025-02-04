@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    background-color: #f5f5dc; /* Light beige background */
+    color: #333; /* Dark gray text color */
+}
+
+.header {
+    background-color: #ff6347; /* Tomato red for the header */
+    color: white;
+}
+
+.button-primary {
+    background-color: #ff6347; /* Tomato red for primary buttons */
+    color: white;
+}
+
+.button-secondary {
+    background-color: #32cd32; /* Lime green for secondary buttons */
+    color: white;
+}
+
+.footer {
+    background-color: #333; /* Dark gray for the footer */
+    color: white;
+}
