@@ -76,15 +76,15 @@ const Cart = () => {
         </div>
         <div className='totalpriceinfo flex justify-between w-full max-w-[400px] font-bold text-orange-500'>
           <span className='w-[150px] text-right'>Tax Price:</span>
-          <span className='w-[150px] text-left'>{total * TAX / 100}</span>
+          <span className='w-[150px] text-left'>{total * 10 / 100}</span>
         </div>
         <div className='totalpriceinfo flex justify-between w-full max-w-[400px] font-bold text-orange-500'>
           <span className='w-[150px] text-right'>Delivery Charges:</span>
-          <span className='w-[150px] text-left'>{DELIVERY_CHARGES}</span>
+          <span className='w-[150px] text-left'>{100}</span>
         </div>
         <div className='totalpriceinfo flex justify-between w-full max-w-[400px] font-bold text-orange-500'>
           <span className='w-[150px] text-right'>Total Amount:</span>
-          <span className='w-[150px] text-left'>{total + (total * TAX / 100) + DELIVERY_CHARGES}</span>
+          <span className='w-[150px] text-left'>{total + (total * 10 / 100) + 100}</span>
         </div>
       </div>
       <div className='flex justify-center'>
