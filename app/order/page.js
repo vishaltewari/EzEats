@@ -31,7 +31,13 @@ const Cart = () => {
   const ordernow = async () => {
     if (typeof window !== 'undefined') {
       let user_id = JSON.parse(localStorage.getItem('user'))._id;
-      // Your order logic here
+      if (JSON.parse(localStorage.getItem('user'))) {
+        
+        alert("Order Placed")
+        router.push('/');
+      } else {
+        router.push('/usersign?order=true');
+      }
     }
   };
 
